@@ -3,12 +3,10 @@
 
 \mode<presentation> {
 
-\usetheme{Montpellier} % good one
+\usetheme{Montpellier} 
 \usecolortheme{beaver}
 
-%\setbeamertemplate{footline} % To remove the footer line in all slides uncomment this line
-\setbeamertemplate{footline}[page number] % To replace the footer line in all slides with a simple slide count uncomment this line
-
+\setbeamertemplate{footline}[page number] 
 \setbeamertemplate{navigation symbols}{} % To remove the navigation symbols from the bottom of all slides uncomment this line
 }
 
@@ -54,9 +52,9 @@
 %	TITLE PAGE
 %------------------
 
-\title[CALTeC for CI]{CALTeC : Content-Adaptive Linear Tensor Completion
+\title[DFTS2 for CI]{DFTS2: Deep Feature Transmission Simulation
 \\ for \\ Collaborative Intelligence}
-\subtitle{\small ICIP 2021. Paper ID: 3013} % The short title appears at the bottom of every slide, the full title is only on the title page
+\subtitle{\small VCIP 2021. Paper ID: xxxx} 
 
 \author[Hans]{Ashiv Dhondea, Robert A. Cohen and Ivan V. {Bajić}}% Your name
 \institute[SFU-Multimedia Lab] 
@@ -82,17 +80,6 @@ Multimedia Lab\\School of Engineering Science\\Simon Fraser University \\ % Your
 \end{frame}
 
 \section{Collaborative Intelligence}
-%\begin{frame}
-	%\frametitle{Introduction: Collaborative Intelligence}
-	%\begin{figure}[H]
-		%\centering
-		%\includegraphics[scale=0.3]{image--000.png}
-		%\caption{Blueprint for Collaborative Intelligence.\blfootnote{\tiny{Y. Kang, J. Hauswald, %C. Gao, A. Rovinski, T. Mudge, J. Mars, and L. Tang, “Neurosurgeon: Collaborative %intelligence between the cloud and mobile edge,” SIGARCH Comput. Archit. News, vol. 45, p. %615–629, Apr. 2017.}} \cite{neurosurgeon}}
-	%	\label{fig:ci}
-	%\end{figure}
-	%CI has shown promising potential for latency and energy savings compared to purely cloud-based %or edge-based analysis solutions \cite{neurosurgeon,jointdnn}.
-%\end{frame}
-
 \begin{frame}
 	\frametitle{Introduction: Collaborative Intelligence}
 		\begin{figure}
@@ -126,8 +113,7 @@ Multimedia Lab\\School of Engineering Science\\Simon Fraser University \\ % Your
 \frametitle{Intermediate tensor transmission over communication channels}
 	\begin{itemize}
 	\item Deep Feature Transmission Simulator (DFTS) was developed to simulate packet-based transmission of deep features over unreliable communication channels \blfootnote{\tiny \textsuperscript{4} H. Unnibhavi, H. Choi, S. R. Alvar, and I. V. Bajić, “Dfts: Deep feature transmission simulator,” 2018.} \cite{unnibhavi2018dfts}.
-		\item DFTS has recently be updated for compatibility with TensorFlow version 2.
-		\item Tensor completion can now be included in DFTS experiments.
+		\item DFTS2 TensorFlow version 2, additional channel models, packet loss concealment methods, additional simulation modes.
 	\end{itemize}
 \end{frame}
 
@@ -193,144 +179,6 @@ p_{G\to B} & = \frac{P_B}{L_B(1-P_B)} & p_{G\to G} & = 1-p_{G\to B} \label{eq:ge
 			\caption{Tiled tensor $\tilde{\mathcal{X}} \in \mathbb{R}^{56 \times 56 \times 64}$ visualization. Each tile represents a channel of shape $56 \times 56$. }
 		\end{minipage}
 	\end{figure}
-\end{frame}
-
-\section{Proposed method}
-
-\begin{frame}
-	\frametitle{Principle behind CALTeC}
-	\begin{figure}
-		\begin{minipage}{.64\textwidth}
-			\includegraphics[width=\linewidth]{tensorvizcaltec.pdf}
-			\caption{Tensor visualization for CALTeC rationale. The packet of interest (packet 3) is given by $\mathbf{x}_i^{(j)}$. The nearest spatial neighbor in-channel (either packet 2 or 4) is given by $\mathbf{x}_{i'}^{(j)}$.}
-		\end{minipage}\hfill
-		\begin{minipage}{.32\textwidth}
-				\begin{block}{CALTeC assumption}
-		The packet of interest can be obtained by selecting a locally similar co-located packet out-of-channel and applying an affine transformation to it. 
-	\end{block}
-		\end{minipage}
-	\end{figure}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Selecting a candidate packet}
-	\begin{block}{Locally similar candidate packet}
-		We want to find another channel $k$ in the tensor that is locally similar to channel $j$. To measure local similarity, we use the Pearson correlation coefficient between the neighboring packet in-channel $\mathbf{x}_{i'}^{(j)}$ and its co-located packet out-of-channel $\mathbf{x}_{i'}^{(k)}$.
-		\[
-		 k^* = \underset{k}{\argmax} \frac{\left(\mathbf{x}_{i'}^{(j)}-\mu_{i'}^{(j)}\right)^\top \left(\mathbf{x}_{i'}^{(k)}-\mu_{i'}^{(k)}\right)}{\sigma_{i'}^{(j)}\sigma_{i'}^{(k)}},
-		\label{eq:Pearson_coefficient}
-		\]
-		which means that the selected candidate packet is $\mathbf{x}_i^{(k^*)}$
-	\end{block}
-\end{frame}
-
-
-\begin{frame}
-	\frametitle{Transforming the candidate packet}
-	\begin{block}{Finding the affine parameters}
-		The selected candidate packet is adjusted to obtain the recovered packet.
-		\[
-		\widehat{\mathbf{x}}_i^{(j)} = a^*\cdot \mathbf{x}_i^{(k^*)} + b^*.
-		\label{eq:recovered_packet}
-		\]
-		Affine parameters $\begin{bmatrix}a^*&b^* \end{bmatrix}$ are found by a least squares fit from $\mathbf{x}_{i'}^{(k^*)}$ to $\mathbf{x}_{i'}^{(j)}$.
-	\end{block}
-\end{frame}
-
-
-\begin{frame}
-	\frametitle{Example on recovering missing packet 3}
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.56]{lumimapcaltecnicer1.pdf}
-		\caption{Illustration of CALTeC repairs on corrupted channel 0 of a deep feature tensor.}
-	\end{figure}
-\end{frame}
-
-\begin{frame}
-	\frametitle{CALTeC-repaired tensor}
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.32]{caltecdemotiled.jpg}
-		\caption{CALTeC repaired tensor}
-	\end{figure}
-\end{frame}
-
-
-\section{Experiments}
-\subsection{Visual results}
-
-\begin{frame}
-	\frametitle{Completed ResNet\nobreakdash-18 add\_1 tensors}
-	\begin{figure}[H]
-		\centering
-		\begin{subfigure}{.17\linewidth}
-			\centering
-			\includegraphics[width = 0.778\linewidth]{originalchannel1scaled.jpg}
-			\caption{Original}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.17\textwidth}
-			\centering
-			\includegraphics[width = 0.778\textwidth]{caltecrepairedchannel1scaled.jpg}
-			\caption{CALTeC}
-		\end{subfigure}%
-        \hfill	
-		\begin{subfigure}{.17\textwidth}
-			\centering
-			\includegraphics[width=0.778\textwidth]{altecrepairedchannel1scaled.jpg}
-			\caption{ALTeC}
-		\end{subfigure}
-		
-			\begin{subfigure}{.17\textwidth}
-			\centering
-			\includegraphics[width = 0.778\textwidth]{damagedchannel1scaled.jpg}
-			\caption{Damaged channel.}
-		\end{subfigure}%
-		\hfill 
-		\begin{subfigure}{.17\textwidth}
-			\centering
-			\includegraphics[width=0.778\textwidth]{silrtc50repairedchannel1scaled.jpg}
-			\caption{SILRTC 50 iterations.}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.17\textwidth}
-			\centering
-			\includegraphics[width=0.778\textwidth]{halrtc50repairedchannel1scaled.jpg}
-			\caption{HaLRTC 50 iterations.}
-		\end{subfigure}
-		\caption{Channel 1 in a damaged \textit{starfish} ResNet\nobreakdash-18 tensor. Images were mapped to grayscale and scaled up using bicubic interpolation for enhanced visualization)}
-		\label{fig:expt:repair:demo}
-	\end{figure}
-\end{frame}
-
-\subsection{Monte Carlo experiments}
-\begin{frame}
-\frametitle{Monte Carlo experiments}
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.49]{add1fontsize20v2modified.pdf}
-    \caption{ResNet\nobreakdash-18 add\_1 tensor completion results. Our proposed method, CALTeC, offers the best performance.}
-    \label{fig:mcresnet18add1}
-\end{figure}
-\end{frame}
-
-\begin{frame}
-    \frametitle{Comparison of tensor completion methods}
-    \begin{table}[b]
-\caption{Tensor completion methods used in our experiments on ResNet\nobreakdash-18 tensors.}
-\vspace{4pt}
-    \label{tab:methods}
-    \centering
-    \begin{tabular}{l|c|c|r|r}
-         Method & Iterative? & Pre-training? & \texttt{add\_1} & \texttt{add\_3} \\
-         \hline
-         SiLRTC~\cite{liu2012tensor}(per iter.)& Yes & No & $228.1~\mathrm{ms}$ & $122.1~\mathrm{ms}$ \\
-         HaLRTC~\cite{liu2012tensor}(per iter.) & Yes & No & $242.6~\mathrm{ms}$ & $128.2~\mathrm{ms}$ \\
-         ALTeC~\cite{Bragile2020} & No & Yes & $30.5~\mathrm{ms}$ & $102.0~\mathrm{ms}$ \\
-         CALTeC & No & No & $77.5~\mathrm{ms}$ & $186.8~\mathrm{ms}$
-    \end{tabular}
-\end{table}
 \end{frame}
 
 \section{Conclusions}
