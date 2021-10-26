@@ -113,39 +113,10 @@ Multimedia Lab\\School of Engineering Science\\Simon Fraser University \\ % Your
 \frametitle{Intermediate tensor transmission over communication channels}
 	\begin{itemize}
 	\item Deep Feature Transmission Simulator (DFTS) was developed to simulate packet-based transmission of deep features over unreliable communication channels \blfootnote{\tiny \textsuperscript{4} H. Unnibhavi, H. Choi, S. R. Alvar, and I. V. Bajić, “Dfts: Deep feature transmission simulator,” 2018.} \cite{unnibhavi2018dfts}.
-		\item DFTS2 TensorFlow version 2, additional channel models, packet loss concealment methods, additional simulation modes.
+		\item DFTS2 TensorFlow version 2: additional channel models, and simulation modes. New packet loss concealment methods from the literature.
 	\end{itemize}
 \end{frame}
 
-\begin{frame}
-	\frametitle{Packet loss concealment}
-	\begin{itemize}
-		\item General tensor completion methods, such as SiLRTC (Simple Low Rank Tensor Completion) and HaLRTC (High accuracy Low Rank Tensor Completion) \cite{liu2012tensor}\blfootnote{\tiny \textsuperscript{5} J. Liu, P. Musialski, P. Wonka, and J. Ye,``Tensor completion for estimating missing values in visual data,” IEEE transactions on pattern analysis and machine intelligence, vol. 35, no. 1, pp. 208–220, 2012.}.
-		\item Method tailored for intermediate feature tensors: ALTeC - Adaptive Linear Tensor Completion \cite{Bragile2020} \blfootnote{\tiny \textsuperscript{6} L. Bragilevsky and I. V.Bajić,``Tensor completion methods for collaborative intelligence,” IEEE Access, vol. 8, pp. 41162–41174, 2020.}
-		%\item Image inpainting methods such as Navier-Stokes based inpainting \cite{navierstokes} \blfootnote{\tiny \textsuperscript{6} M. Bertalmio, A. L. Bertozzi, and G. Sapiro, ``Navier-Stokes, fluid dynamics, and image and video inpainting,” in Proc. IEEE/CVF CVPR, vol. 1, pp. I–355–I–362, 2001.}
-	\end{itemize}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Gilbert-Elliott (GE) communication channel model}
-		\begin{figure}
-		\begin{minipage}{.37\textwidth}
-			\includegraphics[width=0.77\linewidth]{tileddamagedgridm.jpg}
-			\caption{Corrupted ResNet-18 deep feature tensor.}
-		\end{minipage}\hfill
-		\begin{minipage}{.6\textwidth}
-		\small Two-state Markov model with a good (G) state and a bad (B) state. Parameters: burst loss probability ($P_B$) \& average burst length ($B_L$).
-			\begin{align}
-p_{B\to G} & = \frac{1}{L_B} & p_{B\to B} & =1-p_{B\to G} \label{eq:ge:1}
-\end{align}
-\begin{align}
-p_{G\to B} & = \frac{P_B}{L_B(1-P_B)} & p_{G\to G} & = 1-p_{G\to B} \label{eq:ge:2}
-\end{align}
-\small 	The Gilbert-Elliott model has been shown to fittingly \mbox{capture} real-time observed packet loss patterns over the \mbox{Internet}. \cite{5755057}
-		\end{minipage}
-		\blfootnote{\tiny \textsuperscript{7} G. Hasslinger and O. Hohlfeld, “The gilbert-elliott model for packet loss in real time services on the internet,” in 14th GI/ITG Conference - Measurement, Modelling and Evaluation of Computer and Communication Systems, pp. 1–15, 2008.} 
-	\end{figure}
-\end{frame}
 
 \section{Preliminaries}
 \begin{frame}
@@ -154,17 +125,6 @@ p_{G\to B} & = \frac{P_B}{L_B(1-P_B)} & p_{G\to G} & = 1-p_{G\to B} \label{eq:ge
 		\centering\includegraphics[scale=0.9]{tensorlostviz3icip.pdf}
 		\caption{Tensor $\mathcal{X}$ from layer add\_1 of ResNet-18. Several consecutive rows in each channel form a feature data packet.}
 	\end{figure}
-\end{frame}
-
-\begin{frame}
-	\frametitle{Quantizing deep feature tensors}
-	\begin{block}{Quantization to $n$-bits}
-		For each feature tensor element $x \in \mathcal{X}$
-		\[
-		x_{\text{quant}} = \Bigg \lfloor \frac{(x - \mathcal{X}_{\text{min}})}{( \mathcal{X}_{\text{max}} -  \mathcal{X}_{\text{min}})} \cdot 2^{n-1} \Bigg \rceil
-		\]
-		Feature tensors can be cast from 32-bit floats to unsigned 8-bit integers.
-	\end{block}
 \end{frame}
 
 \begin{frame}
@@ -181,35 +141,153 @@ p_{G\to B} & = \frac{P_B}{L_B(1-P_B)} & p_{G\to G} & = 1-p_{G\to B} \label{eq:ge
 	\end{figure}
 \end{frame}
 
-\section{Conclusions}
+\section{Packetization}
 \begin{frame}
-	\frametitle{Conclusions and recommendations}
-	\begin{itemize}
-		\item CALTeC exploits intra- and inter-channel similarity in deep feature tensors to find the best candidates in other channels to fill in the gaps in corrupted packetized deep feature tensors.
-		\item CALTeC adjusts the recovered data with an affine transformation.
-		\item CALTeC is slower than ALTeC but unlike ALTeC, it does not require pre-training.
-		\item Both ALTeC and CALTeC are much faster than SiLRTC and HaLRTC.
-		\item Future work can focus on extending DFTS to run different tasks and to incorporate different compression methods for the transmitted deep feature tensor.
+    \frametitle{Feature tensor packetization}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Quantizing deep feature tensors}
+	\begin{block}{Quantization to $n$-bits}
+		For each feature tensor element $x \in \mathcal{X}$
+		\[
+		x_{\text{quant}} = \Bigg \lfloor \frac{(x - \mathcal{X}_{\text{min}})}{( \mathcal{X}_{\text{max}} -  \mathcal{X}_{\text{min}})} \cdot 2^{n-1} \Bigg \rceil
+		\]
+		Feature tensors can be cast from 32-bit floats to unsigned 8-bit integers.
+	\end{block}
+\end{frame}
+
+\section{Channel models}
+\begin{frame}
+\frametitle{Channel models overview}
+\begin{itemize}
+		\item DFTS2 allows the user to select between three channel models.
+		\item An iid (independent and identically distributed) channel model.
+		\item Gilbert-Elliott channel model.
+		\item External packet traces.
 	\end{itemize}
 \end{frame}
 
+\begin{frame}
+\frametitle{Gilbert-Elliott (GE) channel model}
+    	\begin{figure}
+		\begin{minipage}{.48\textwidth}
+		\centering
+			\includegraphics[width=0.8\linewidth]{tileddamagedgridm.jpg}
+			\caption{Corrupted ResNet-18 deep feature tensor.}
+		\end{minipage}\hfill
+		\begin{minipage}{.48\textwidth}
+			Two-state Markov model with a good (G) state and a bad (B) state. Parameters: burst loss probability ($P_B$) \& average burst length ($B_L$).
+			\begin{equation}
+			\begin{split}
+			p_{B\to G} & = \frac{1}{L_B},\\
+			p_{B\to B} & =1-p_{B\to G},\\
+			p_{G\to B} & = \frac{P_B}{L_B(1-P_B)},\\
+			p_{G\to G} & = 1-p_{G\to B}.
+			\end{split}
+			\end{equation} 
+		\end{minipage}
+	\end{figure}
+\end{frame}
+
+\begin{frame}
+\frametitle{External packet traces}
+    
+\end{frame}
+
+\section{Feature loss concealment}
+\begin{frame}
+	\frametitle{Packet loss concealment}
+	\begin{itemize}
+		\item General tensor completion methods, such as SiLRTC (Simple Low Rank Tensor Completion) and HaLRTC (High accuracy Low Rank Tensor Completion) \cite{liu2012tensor}\blfootnote{\tiny \textsuperscript{5} J. Liu, P. Musialski, P. Wonka, and J. Ye,``Tensor completion for estimating missing values in visual data,” IEEE transactions on pattern analysis and machine intelligence, vol. 35, no. 1, pp. 208–220, 2012.}.
+		\item Methods tailored for intermediate feature tensors: ALTeC - Adaptive Linear Tensor Completion \cite{Bragile2020} \blfootnote{\tiny \textsuperscript{6} L. Bragilevsky and I. V.Bajić,``Tensor completion methods for collaborative intelligence,” IEEE Access, vol. 8, pp. 41162–41174, 2020.} and CALTeC - Content-Adaptive Linear Tensor Completion
+		\item Image inpainting methods such as Navier-Stokes based inpainting \cite{navierstokes} \blfootnote{\tiny \textsuperscript{6} M. Bertalmio, A. L. Bertozzi, and G. Sapiro, ``Navier-Stokes, fluid dynamics, and image and video inpainting,” in Proc. IEEE/CVF CVPR, vol. 1, pp. I–355–I–362, 2001.}
+	\end{itemize}
+\end{frame}
+
+\section{Simulation modes}
+\begin{frame}
+\frametitle{Simulation modes}
+DFTS2 offers two simulation modes:
+	\begin{itemize}
+		\item single-shot mode - for demonstration purposes on a small test set.
+		\item Monte Carlo mode - for quantitative results in a full-scale experiment.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Demonstration mode}
+	\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.33]{vcipfig.png}
+		\caption{Tiled ResNet-34 add\_3 tensor produced from a (h) Meerkat image: (a) original; (b) corrupted; repaired with (c) CALTeC, (d) ALTeC, (e) HaLRTC with 50 iterations, (f) SiLRTC with 50 iterations and (g) Navier-Stokes inpainting. Each tile delineated by green lines represents a channel in a feature tensor. Images were mapped to grayscale for enhanced visualization.}
+	\end{figure}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Monte Carlo experiments}
+	\begin{block}{Simulation parameters}
+		Tensors are 8-bit quantized and then packetized with $r_p =8$ rows of features per packet. GE channels parameterized by $P_B = \{0.01,0.1,0.2,0.3\}$ and $L_B = \{1,2,3,\dots,7\}$. 882 images subset of Imagenet used in Monte Carlo experiments. 20 channel realizations for each pair of parameters $(P_B,L_B)$ for each test image.
+	\end{block}
+\begin{block}{DNNs}
+	ResNet-18, ResNet-34, DenseNet-121 and EfficientNet-B0.
+\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Monte Carlo results}
+		\begin{figure}
+		\begin{minipage}{0.68\textwidth}
+			\includegraphics[width=\linewidth]{mcresults.png}
+		\end{minipage}\hfill
+		\begin{minipage}{0.28\textwidth}
+			\includegraphics[width=\linewidth]{default_lp_accumulated_vcip_legend.pdf}
+		\end{minipage}
+		\caption{Top-1 cloud sub-model classification accuracy averaged over Monte Carlo simulations under a range of GE burst lengths.}
+	\end{figure}
+\end{frame}
+
+
+\section{Conclusions}
+\begin{frame}
+	\begin{block}{DFTS2}
+		More sophisticated framework than DFTS with new capabilities: additional channel models and feature loss concealment.
+	\end{block}
+\begin{block}{Collaborative image classification}
+	A comprehensive study of packet loss concealment methods on several DNNs.
+\end{block}
+\begin{block}{DFTS2: future work}
+DFTS2 is flexible: it can be adapted to investigate deep feature compression in collaborative intelligence. DFTS2 is extensible: it can be extended to handle collaborative object detection and segmentation tasks.
+\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Summary of main components in the simulator}
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.37]{mainsimulatorcomponents.png}
+\end{figure}
+\end{frame}
 %------------------------------------------------
 \section{Implementation}
 \begin{frame}
 \frametitle{Implementation \& Results}
-Public repository for DFTS2: \url{https://github.com/AshivDhondea/DFTS_TF2}.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale=0.35]{frame.pdf}
-\end{figure}
-
-This repository also contains the packet loss traces and Monte Carlo experiment results presented in this paper.
+Public repository for DFTS2: \url{https://github.com/AshivDhondea/DFTS2}.
+	\begin{figure}
+		\begin{minipage}{.4\textwidth}
+			\includegraphics[width=0.8\linewidth]{qrcode_dpbx.pdf}
+			\caption{Source code \& Monte Carlo packet traces and results.}
+		\end{minipage}\hfill
+		\begin{minipage}{.4\textwidth}
+			\includegraphics[width=0.8\linewidth]{qrcode_github.pdf}
+			\caption{GitHub repository \& user documentation}
+		\end{minipage}
+	\end{figure}
 	\end{frame}
 	
 %---------------------------------------------
 \section{References}
 \bibliographystyle{ieeetr}
-\bibliography{icipcaltecrefs}
+\bibliography{vcipcaltecrefs}
 %-----------------------------------------------
 \end{document} 
