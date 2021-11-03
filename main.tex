@@ -22,15 +22,12 @@
 \usepackage{subcaption}
 \usepackage{amsmath,amsthm,amssymb}
 \usepackage{float}
+\usepackage{multirow}
 % ------------------ My own stuff
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
 \usepackage{amsmath,amsthm,amssymb}
-\DeclareMathOperator*{\argmax}{\arg\!\max}
-\DeclareMathOperator*{\argmin}{\arg\!\min}
-\DeclareMathOperator{\E}{\mathbb{E}}
-\DeclareMathOperator{\R}{\mathbb{R}}
 
 \beamertemplatenavigationsymbolsempty
 
@@ -60,12 +57,11 @@
 \institute[SFU-Multimedia Lab] 
 {
 \small
-Multimedia Lab\\School of Engineering Science\\Simon Fraser University \\ % Your institution for the title page
+Multimedia Lab\\School of Engineering Science\\Simon Fraser University. Burnaby, BC. Canada \\ % Your institution for the title page
 \smallskip
 \centering
-\includegraphics[scale=0.25]{SFUhorizontallogorgb.pdf}
+\includegraphics[scale=0.23]{SFUhorizontallogorgb.pdf}
 }
-
 \date{\today} % Date, can be changed to a custom date
 
 \begin{document}
@@ -113,39 +109,35 @@ Multimedia Lab\\School of Engineering Science\\Simon Fraser University \\ % Your
 \frametitle{Intermediate tensor transmission over communication channels}
 	\begin{itemize}
 	\item Deep Feature Transmission Simulator (DFTS) was developed to simulate packet-based transmission of deep features over unreliable communication channels \blfootnote{\tiny \textsuperscript{4} H. Unnibhavi, H. Choi, S. R. Alvar, and I. V. Bajić, “Dfts: Deep feature transmission simulator,” 2018.} \cite{unnibhavi2018dfts}.
-		\item DFTS2 TensorFlow version 2: additional channel models, and simulation modes. New packet loss concealment methods from the literature.
+	\item DFTS2: more sophisticated simulation framework:
+	\begin{itemize}
+	    \item TensorFlow version 2 compatibility.
+	    \item Additional communication channel models and simulation modes.
+	    \item Missing feature recovery methods from the literature.
+	\end{itemize}
+	\item A comprehensive study of packet loss concealment methods on several DNNs.
 	\end{itemize}
 \end{frame}
 
-
-\section{Preliminaries}
+\section{Packetization}
 \begin{frame}
-	\frametitle{A deep feature tensor}
+	\frametitle{Feature tensor in Collaborative Intelligence}
+		\begin{figure}[H]
+		\centering
+		\includegraphics[scale=0.5,viewport=2.391047 296.719996 531.251984 538.217984,clip]{system_overviewt_v4.pdf}
+		\caption{Feature tensor in collaborative intelligence (adapted from \cite[Fig. 1]{cohen2021lightweight})\blfootnote{\tiny \textsuperscript{3} R. A. Cohen, H. Choi, and I. V. Bajić, “Lightweight compression of intermediate neural network features for collaborative intelligence,” IEEE Open Journal of Circuits and Systems, vol. 2, pp. 350–362, 2021.}}
+	\end{figure}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Feature tensor packetization}
 	\begin{figure}[H]
 		\centering\includegraphics[scale=0.9]{tensorlostviz3icip.pdf}
 		\caption{Tensor $\mathcal{X}$ from layer add\_1 of ResNet-18. Several consecutive rows in each channel form a feature data packet.}
 	\end{figure}
 \end{frame}
 
-\begin{frame}
-	\frametitle{Corrupted tensor visualization}
-	\begin{figure}
-		\begin{minipage}{.4\textwidth}
-			\includegraphics[width=0.75\linewidth]{tensorviz4.pdf}
-			\caption{Corrupted ResNet-18 deep feature tensor consisting of 64 channels. Each channel consists of 7 packets. Packets are $8 \times 56$ blocks of deep feature tensor values.}
-		\end{minipage}\hfill
-		\begin{minipage}{.4\textwidth}
-			\includegraphics[width=0.78\linewidth]{tiledgridtensor.jpg}
-			\caption{Tiled tensor $\tilde{\mathcal{X}} \in \mathbb{R}^{56 \times 56 \times 64}$ visualization. Each tile represents a channel of shape $56 \times 56$. }
-		\end{minipage}
-	\end{figure}
-\end{frame}
-
-\section{Packetization}
-\begin{frame}
-    \frametitle{Feature tensor packetization}
-\end{frame}
-
+\section{Quantization}
 \begin{frame}
 	\frametitle{Quantizing deep feature tensors}
 	\begin{block}{Quantization to $n$-bits}
@@ -157,51 +149,66 @@ Multimedia Lab\\School of Engineering Science\\Simon Fraser University \\ % Your
 	\end{block}
 \end{frame}
 
+\begin{frame}
+\frametitle{Effect of quantizing deep feature tensors}
+    \begin{figure}
+        \centering
+        \includegraphics[scale=0.5]{quant_densenet121_pool2_conv.pdf}
+        \caption{Classification accuracy on DenseNet-121 pool2\_conv tensors with varying quantization resolution.}
+        \label{fig:quant}
+    \end{figure}
+\end{frame}
+
 \section{Channel models}
 \begin{frame}
-\frametitle{Channel models overview}
+\frametitle{Communication channel models overview}
+\begin{block}{DFTS2 channel models}
 \begin{itemize}
-		\item DFTS2 allows the user to select between three channel models.
-		\item An iid (independent and identically distributed) channel model.
-		\item Gilbert-Elliott channel model.
-		\item External packet traces.
-	\end{itemize}
+    \item An iid (independent and identically distributed) channel model.
+	\item Gilbert-Elliott channel model.
+	\item External packet traces.
+\end{itemize}
+\end{block}
 \end{frame}
 
 \begin{frame}
 \frametitle{Gilbert-Elliott (GE) channel model}
     	\begin{figure}
-		\begin{minipage}{.48\textwidth}
+		\begin{minipage}{.37\textwidth}
 		\centering
 			\includegraphics[width=0.8\linewidth]{tileddamagedgridm.jpg}
 			\caption{Corrupted ResNet-18 deep feature tensor.}
 		\end{minipage}\hfill
 		\begin{minipage}{.48\textwidth}
-			Two-state Markov model with a good (G) state and a bad (B) state. Parameters: burst loss probability ($P_B$) \& average burst length ($B_L$).
+			Two-state Markov model with a good (G) state and a bad (B) state. Parameters: burst loss probability ($P_B$) \& average burst length ($B_L$). \cite{5755057,stuhlmuller2000analysis} 
 			\begin{equation}
 			\begin{split}
-			p_{B\to G} & = \frac{1}{L_B},\\
-			p_{B\to B} & =1-p_{B\to G},\\
-			p_{G\to B} & = \frac{P_B}{L_B(1-P_B)},\\
-			p_{G\to G} & = 1-p_{G\to B}.
+			p_{B\to G} & = \frac{1}{L_B},p_{B\to B} = 1-p_{B\to G}\\
+			p_{G\to B} & = \frac{P_B}{L_B(1-P_B)},p_{G\to G} = 1-p_{G\to B}.\\
 			\end{split}
 			\end{equation} 
 		\end{minipage}
 	\end{figure}
+	\blfootnote{\tiny \textsuperscript{5} G. Hasslinger and O. Hohlfeld, ``The Gilbert-Elliott model for packet loss in realtime services on the Internet,” inProc. 14th GI/ITG Conference - Measurement,Modelling and Evaluation of Computer and Communication Systems, pp. 1–15,2008} \blfootnote{\tiny \textsuperscript{6} K. Stuhlmuller, N. Farber, M. Link, and B. Girod, ``Analysis of video transmission over lossy channels,” IEEE Journal on Selected Areas in Communications, vol. 18,no. 6, pp. 1012–1032, 2000.}
 \end{frame}
 
 \begin{frame}
 \frametitle{External packet traces}
-    
+       \begin{figure}
+        \centering
+        \includegraphics[scale=0.4,viewport=20 60 840 400,clip]{externalpkt.pdf}
+        \caption{External packet traces may be captured as Excel files. Each sheet in the Excel file represents a feature tensor channel. Columns represent packet indices within a tensor channel. Rows represent test image indices. A `1' means correctly received packet and a `0' means lost packet.}
+        \label{fig:extpkt}
+    \end{figure}
 \end{frame}
 
 \section{Feature loss concealment}
 \begin{frame}
 	\frametitle{Packet loss concealment}
 	\begin{itemize}
-		\item General tensor completion methods, such as SiLRTC (Simple Low Rank Tensor Completion) and HaLRTC (High accuracy Low Rank Tensor Completion) \cite{liu2012tensor}\blfootnote{\tiny \textsuperscript{5} J. Liu, P. Musialski, P. Wonka, and J. Ye,``Tensor completion for estimating missing values in visual data,” IEEE transactions on pattern analysis and machine intelligence, vol. 35, no. 1, pp. 208–220, 2012.}.
-		\item Methods tailored for intermediate feature tensors: ALTeC - Adaptive Linear Tensor Completion \cite{Bragile2020} \blfootnote{\tiny \textsuperscript{6} L. Bragilevsky and I. V.Bajić,``Tensor completion methods for collaborative intelligence,” IEEE Access, vol. 8, pp. 41162–41174, 2020.} and CALTeC - Content-Adaptive Linear Tensor Completion
-		\item Image inpainting methods such as Navier-Stokes based inpainting \cite{navierstokes} \blfootnote{\tiny \textsuperscript{6} M. Bertalmio, A. L. Bertozzi, and G. Sapiro, ``Navier-Stokes, fluid dynamics, and image and video inpainting,” in Proc. IEEE/CVF CVPR, vol. 1, pp. I–355–I–362, 2001.}
+		\item General tensor completion methods, such as SiLRTC (Simple Low Rank Tensor Completion) and HaLRTC (High accuracy Low Rank Tensor Completion) \cite{liu2012tensor}\blfootnote{\tiny \textsuperscript{7} J. Liu, P. Musialski, P. Wonka, and J. Ye,``Tensor completion for estimating missing values in visual data,” IEEE transactions on pattern analysis and machine intelligence, vol. 35, no. 1, pp. 208–220, 2012.}.
+		\item Methods tailored for intermediate feature tensors: ALTeC - Adaptive Linear Tensor Completion \cite{Bragile2020} \blfootnote{\tiny \textsuperscript{8} L. Bragilevsky, and I. V.Bajić,``Tensor completion methods for collaborative intelligence,” IEEE Access, vol. 8, pp. 41162–41174, 2020.} and CALTeC - Content-Adaptive Linear Tensor Completion \cite{CALTeC_ICIP_2021} \blfootnote{\tiny \textsuperscript{9} A. Dhondea, R. A. Cohen, and I. V.Bajić, ``CALTeC: Content-adaptive linear tensor completion for collaborative intelligence," Proc. IEEE ICIP, 2021.}
+		\item Image inpainting methods such as Navier-Stokes based inpainting \cite{navierstokes} \blfootnote{\tiny \textsuperscript{10} M. Bertalmio, A. L. Bertozzi, and G. Sapiro, ``Navier-Stokes, fluid dynamics, and image and video inpainting,” in Proc. IEEE/CVF CVPR, vol. 1, pp. I–355–I–362, 2001.}
 	\end{itemize}
 \end{frame}
 
@@ -225,31 +232,84 @@ DFTS2 offers two simulation modes:
 \end{frame}
 
 \begin{frame}
-	\frametitle{Monte Carlo experiments}
-	\begin{block}{Simulation parameters}
-		Tensors are 8-bit quantized and then packetized with $r_p =8$ rows of features per packet. GE channels parameterized by $P_B = \{0.01,0.1,0.2,0.3\}$ and $L_B = \{1,2,3,\dots,7\}$. 882 images subset of Imagenet used in Monte Carlo experiments. 20 channel realizations for each pair of parameters $(P_B,L_B)$ for each test image.
-	\end{block}
-\begin{block}{DNNs}
-	ResNet-18, ResNet-34, DenseNet-121 and EfficientNet-B0.
-\end{block}
+\frametitle{Monte Carlo experiments}
+    \begin{table}[t]   \caption{Monte Carlo experiment parameters}
+  %\vspace{4pt}
+  \label{tab:description:mc}
+  \centering
+ \begin{tabular}{ l | l }
+ %\hline
+   \textbf{Component} & \textbf{Parameters} \\
+      \hline
+      \hline
+      \textbf{Model} & ResNet-18, ResNet-34, DenseNet-121 \& EfficientNet-B0. \\
+      \hline  
+      \textbf{Quantization} & Uniform 8-bit \\
+      \hline
+      \textbf{Packetization} & 4 or 8 feature rows/ packet (depending on tensor dimensions) \\
+      \hline
+      \textbf{Channel model} & Gilbert-Elliott ($P_B = \{0.01,0.10,0.20,0.30\},L_B=\{1,2,\dotsc,7\}$)\\
+      \hline
+      \textbf{Dataset} & 882 image subset of Imagenet \\
+      \hline
+      \textbf{Monte Carlo} & 20 channel realizations per $(P_B,L_B)$ pair/test image tensor \\
+      \hline
+      \textbf{Performance metric} & Top-1 \& Top-5 classification accuracy
+    \end{tabular}
+\end{table}
+
 \end{frame}
+
 
 \begin{frame}
 	\frametitle{Monte Carlo results}
-		\begin{figure}
-		\begin{minipage}{0.68\textwidth}
-			\includegraphics[width=\linewidth]{mcresults.png}
-		\end{minipage}\hfill
-		\begin{minipage}{0.28\textwidth}
-			\includegraphics[width=\linewidth]{default_lp_accumulated_vcip_legend.pdf}
-		\end{minipage}
-		\caption{Top-1 cloud sub-model classification accuracy averaged over Monte Carlo simulations under a range of GE burst lengths.}
-	\end{figure}
+	
+	\begin{figure}[H]
+		\centering
+		\begin{subfigure}{.275\linewidth}
+			\centering
+			\includegraphics[width = \linewidth]{lp_vcip_rpp_8_top1_resnet18_add_1.pdf}
+			\vspace*{-8mm} \caption{ResNet-18 add\_1}
+		\end{subfigure}%
+		\hfill
+		\begin{subfigure}{.275\textwidth}
+			\centering
+			\includegraphics[width = \textwidth]{lp_vcip_rpp_4_top1_resnet18_add_3.pdf}
+			\vspace*{-8mm} \caption{ResNet-18 add\_3}
+		\end{subfigure}%
+		\hfill
+		\begin{subfigure}{.275\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{lp_vcip_rpp_8_top1_efficientnetb0.pdf}
+			\vspace*{-8mm} \caption{EfficientNet-B0 block2b\_add}
+		\end{subfigure}
+		
+		\begin{subfigure}{.275\textwidth}
+			\centering
+			\includegraphics[width = \textwidth]{lp_vcip_rpp_8_top1_densenet121_pool2_conv.pdf}
+			\vspace*{-8mm}\caption{DenseNet-121 pool2\_conv}
+		\end{subfigure}%
+		\hfill 
+		\begin{subfigure}{.275\textwidth}
+			\centering
+			\includegraphics[width=\textwidth]{lp_vcip_rpp_8_top1_resnet34_add_3.pdf}
+			\vspace*{-8mm}\caption{ResNet-34 add\_3}
+		\end{subfigure}%
+		\hfill
+		\begin{subfigure}{.275\textwidth}
+			\centering
+			\includegraphics[width=0.9\textwidth]{default_vcip_legend.pdf}
+			\vspace*{-6mm}\caption{}
+		\end{subfigure}
+		\vspace*{-4mm}\caption{Monte Carlo results: Top-1 classification accuracy}
+		\label{fig:mc}
+	\end{figure}	
 \end{frame}
 
 
 \section{Conclusions}
 \begin{frame}
+\frametitle{Conclusions}
 	\begin{block}{DFTS2}
 		More sophisticated framework than DFTS with new capabilities: additional channel models and feature loss concealment.
 	\end{block}
@@ -257,17 +317,42 @@ DFTS2 offers two simulation modes:
 	A comprehensive study of packet loss concealment methods on several DNNs.
 \end{block}
 \begin{block}{DFTS2: future work}
-DFTS2 is flexible: it can be adapted to investigate deep feature compression in collaborative intelligence. DFTS2 is extensible: it can be extended to handle collaborative object detection and segmentation tasks.
+\begin{itemize}
+    \item Deep feature compression of tensors transmitted over lossy channels in collaborative intelligence.
+    \item Additional tasks: collaborative object detection and segmentation.
+\end{itemize}
+%DFTS2 is flexible: it can be adapted to investigate deep feature compression in collaborative intelligence. DFTS2 is extensible: it can be extended to handle collaborative object detection and segmentation tasks.
 \end{block}
 \end{frame}
 
 \begin{frame}
-	\frametitle{Summary of main components in the simulator}
-\begin{figure}[H]
-	\centering
-	\includegraphics[scale=0.37]{mainsimulatorcomponents.png}
-\end{figure}
+\frametitle{Summary of main components of the simulator}
+\begin{table}[t]   \caption{Main simulator components}
+  %\vspace{4pt}
+  \label{tab:description:components}
+  \centering
+ \begin{tabular}{ l | l }
+   \textbf{Component} & \textbf{Options} \\
+      \hline
+      \hline
+      \textbf{Model} & Any tensorflow.keras model \\
+      \hline  
+      \textbf{Split point} & Any layer \\
+      \hline
+      \textbf{Quantization} & No quantization or uniform $n$-bit \\
+      \hline
+      \textbf{Packetization} & $r_p$ feature rows per packet \\
+      \hline
+      \textbf{Channel model} & Random (iid), Gilbert-Elliott or packet traces    \\
+      \hline
+      \multirow{2}{*}{\textbf{Loss recovery}} & None, SiLRTC~\cite{liu2012tensor}, HaLRTC~\cite{liu2012tensor}, ALTeC~\cite{Bragile2020}, \\ & CALTeC~\cite{CALTeC_ICIP_2021} or Navier-Stokes~\cite{navierstokes}\\
+      \hline
+      \textbf{Mode} & Single-shot (demo) or Monte Carlo\\ 
+      \hline
+    \end{tabular}
+\end{table}
 \end{frame}
+
 %------------------------------------------------
 \section{Implementation}
 \begin{frame}
