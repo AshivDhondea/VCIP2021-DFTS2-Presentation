@@ -109,6 +109,7 @@ Multimedia Lab\\School of Engineering Science\\Simon Fraser University. Burnaby,
 \frametitle{Intermediate tensor transmission over communication channels}
 	\begin{itemize}
 	\item Deep Feature Transmission Simulator (DFTS) was developed to simulate packet-based transmission of deep features over unreliable communication channels \blfootnote{\tiny \textsuperscript{4} H. Unnibhavi, H. Choi, S. R. Alvar, and I. V. Bajić, “Dfts: Deep feature transmission simulator,” 2018.} \cite{unnibhavi2018dfts}.
+	\item To our knowledge, DFTS is the only feature transmission simulator over unreliable communication channels.
 	\item DFTS2: more sophisticated simulation framework:
 	\begin{itemize}
 	    \item TensorFlow version 2 compatibility.
@@ -129,13 +130,30 @@ Multimedia Lab\\School of Engineering Science\\Simon Fraser University. Burnaby,
 	\end{figure}
 \end{frame}
 
+%\begin{frame}
+    %\frametitle{Feature tensor packetization}
+	%\begin{figure}[H]
+		%\centering\includegraphics[scale=0.9]{tensorlostviz3vcipprez.pdf}
+		%\caption{Tensor $\mathcal{X}$ from layer add\_1 of ResNet-18. Several %consecutive rows in each channel form a feature data packet.}
+%	\end{figure}
+%\end{frame}
+
 \begin{frame}
-    \frametitle{Feature tensor packetization}
-	\begin{figure}[H]
-		\centering\includegraphics[scale=0.9]{tensorlostviz3icip.pdf}
-		\caption{Tensor $\mathcal{X}$ from layer add\_1 of ResNet-18. Several consecutive rows in each channel form a feature data packet.}
+	\frametitle{Feature tensor visualization}
+	\begin{figure}
+		\begin{minipage}{.48\textwidth}
+		\centering
+			\includegraphics[width=\linewidth]{tensorlostviz3vcipprez.pdf}
+			\caption{Tensor $\mathcal{X}$ from layer add\_1 of ResNet-18. Several consecutive rows in each channel form a feature data packet. Packet 0 in last channel is highlighted in blue.}
+		\end{minipage}\hfill
+		\begin{minipage}{.48\textwidth}
+		\centering
+			\includegraphics[width=0.78\linewidth]{original_batch_2_item_0_tiled_gridded.jpg}
+			\caption{Tiled visualization of tensor $\mathcal{X}$: packets from the first three \& last channels indicated in green, packet 0 in last channel highlighted in blue.}
+		\end{minipage}
 	\end{figure}
 \end{frame}
+
 
 \section{Quantization}
 \begin{frame}
@@ -226,7 +244,7 @@ DFTS2 offers two simulation modes:
 \frametitle{Demonstration mode}
 	\begin{figure}[H]
 		\centering
-		\includegraphics[scale=0.33]{vcipfig.png}
+		\includegraphics[scale=0.3]{vcipfig.png}
 		\caption{Tiled ResNet-34 add\_3 tensor produced from a (h) Meerkat image: (a) original; (b) corrupted; repaired with (c) CALTeC, (d) ALTeC, (e) HaLRTC with 50 iterations, (f) SiLRTC with 50 iterations and (g) Navier-Stokes inpainting. Each tile delineated by green lines represents a channel in a feature tensor. Images were mapped to grayscale for enhanced visualization.}
 	\end{figure}
 \end{frame}
@@ -263,47 +281,13 @@ DFTS2 offers two simulation modes:
 
 \begin{frame}
 	\frametitle{Monte Carlo results}
-	
 	\begin{figure}[H]
-		\centering
-		\begin{subfigure}{.275\linewidth}
-			\centering
-			\includegraphics[width = \linewidth]{lp_vcip_rpp_8_top1_resnet18_add_1.pdf}
-			\vspace*{-8mm} \caption{ResNet-18 add\_1}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.275\textwidth}
-			\centering
-			\includegraphics[width = \textwidth]{lp_vcip_rpp_4_top1_resnet18_add_3.pdf}
-			\vspace*{-8mm} \caption{ResNet-18 add\_3}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.275\textwidth}
-			\centering
-			\includegraphics[width=\textwidth]{lp_vcip_rpp_8_top1_efficientnetb0.pdf}
-			\vspace*{-8mm} \caption{EfficientNet-B0 block2b\_add}
-		\end{subfigure}
-		
-		\begin{subfigure}{.275\textwidth}
-			\centering
-			\includegraphics[width = \textwidth]{lp_vcip_rpp_8_top1_densenet121_pool2_conv.pdf}
-			\vspace*{-8mm}\caption{DenseNet-121 pool2\_conv}
-		\end{subfigure}%
-		\hfill 
-		\begin{subfigure}{.275\textwidth}
-			\centering
-			\includegraphics[width=\textwidth]{lp_vcip_rpp_8_top1_resnet34_add_3.pdf}
-			\vspace*{-8mm}\caption{ResNet-34 add\_3}
-		\end{subfigure}%
-		\hfill
-		\begin{subfigure}{.275\textwidth}
-			\centering
-			\includegraphics[width=0.9\textwidth]{default_vcip_legend.pdf}
-			\vspace*{-6mm}\caption{}
-		\end{subfigure}
-		\vspace*{-4mm}\caption{Monte Carlo results: Top-1 classification accuracy}
-		\label{fig:mc}
-	\end{figure}	
+	    \centering
+	    \includegraphics[scale=0.6]{lp_accumulated_vcip_rpp_8_top1_legend.pdf}
+	    \caption{Example Monte Carlo results with EfficientNet-B0 split at the output of block2b\_add}
+	    \label{fig:mc}
+	\end{figure}
+	
 \end{frame}
 
 
