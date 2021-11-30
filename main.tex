@@ -51,7 +51,7 @@
 
 \title[DFTS2 for CI]{DFTS2: Deep Feature Transmission Simulation
 \\ for \\ Collaborative Intelligence}
-\subtitle{\small VCIP 2021. Paper ID: xxxx} 
+\subtitle{\small VCIP 2021. Paper ID: 216} 
 
 \author[Hans]{Ashiv Dhondea, Robert A. Cohen and Ivan V. {Bajić}}% Your name
 \institute[SFU-Multimedia Lab] 
@@ -62,7 +62,9 @@ Multimedia Lab\\School of Engineering Science\\Simon Fraser University. Burnaby,
 \centering
 \includegraphics[scale=0.23]{SFUhorizontallogorgb.pdf}
 }
-\date{\today} % Date, can be changed to a custom date
+%\date{\today} 
+\date{December 7, 2021}
+% Date, can be changed to a custom date
 
 \begin{document}
 
@@ -94,21 +96,21 @@ Multimedia Lab\\School of Engineering Science\\Simon Fraser University. Burnaby,
 	\end{figure}
 \end{frame}
 
-\begin{frame}
-    	\frametitle{System overview: collaborative intelligence.}
-	\begin{figure}[H]
-		\centering
-		\includegraphics[scale=0.33,viewport=2.391047 126.719996 531.251984 538.217984,clip]{systemoverviewtv3.pdf}
-		\caption{Deep feature tensor transmission overview (adapted from \cite[Fig. 1]{cohen2021lightweight})\blfootnote{\tiny \textsuperscript{3} R. A. Cohen, H. Choi, and I. V. Bajić, “Lightweight compression of intermediate neural network features for collaborative intelligence,” IEEE Open Journal of Circuits and Systems, vol. 2, pp. 350–362, 2021.}}
-	\end{figure}
-\end{frame}
+%\begin{frame}
+ %   	\frametitle{System overview: collaborative intelligence.}
+%	\begin{figure}[H]
+%		\centering
+%		\includegraphics[scale=0.33,viewport=2.391047 126.719996 531.251984 538.217984,clip]{systemoverviewtv3.pdf}
+%		\caption{Deep feature tensor transmission simulation (adapted from \cite[Fig. 1]{cohen2021lightweight})\blfootnote{\tiny \textsuperscript{3} R. A. Cohen, H. Choi, and I. V. Bajić, “Lightweight compression of intermediate neural network features for collaborative intelligence,” IEEE Open Journal of Circuits and Systems, vol. 2, pp. 350–362, 2021.}}
+%	\end{figure}
+%\end{frame}
 
 \section{Literature review}
 
 \begin{frame}
 \frametitle{Intermediate tensor transmission over communication channels}
 	\begin{itemize}
-	\item Deep Feature Transmission Simulator (DFTS) was developed to simulate packet-based transmission of deep features over unreliable communication channels \blfootnote{\tiny \textsuperscript{4} H. Unnibhavi, H. Choi, S. R. Alvar, and I. V. Bajić, “Dfts: Deep feature transmission simulator,” 2018.} \cite{unnibhavi2018dfts}.
+	\item Deep Feature Transmission Simulator (DFTS) was developed to simulate packet-based transmission of deep features over unreliable communication channels \blfootnote{\tiny \textsuperscript{4} H. Unnibhavi, H. Choi, S. R. Alvar, and I. V. Bajić, “DFTS: Deep feature transmission simulator,” IEEE MMSP demo, 2018.} \cite{unnibhavi2018dfts}.
 	\item To our knowledge, DFTS is the only feature transmission simulator over unreliable communication channels.
 	\item DFTS2: more sophisticated simulation framework:
 	\begin{itemize}
@@ -224,7 +226,7 @@ Multimedia Lab\\School of Engineering Science\\Simon Fraser University. Burnaby,
 \begin{frame}
 	\frametitle{Packet loss concealment}
 	\begin{itemize}
-		\item General tensor completion methods, such as SiLRTC (Simple Low Rank Tensor Completion) and HaLRTC (High accuracy Low Rank Tensor Completion) \cite{liu2012tensor}\blfootnote{\tiny \textsuperscript{7} J. Liu, P. Musialski, P. Wonka, and J. Ye,``Tensor completion for estimating missing values in visual data,” IEEE transactions on pattern analysis and machine intelligence, vol. 35, no. 1, pp. 208–220, 2012.}.
+		\item General tensor completion methods, such as SiLRTC (Simple Low Rank Tensor Completion) and HaLRTC (High accuracy Low Rank Tensor Completion) \cite{liu2012tensor}\blfootnote{\tiny \textsuperscript{7} J. Liu, P. Musialski, P. Wonka, and J. Ye,``Tensor completion for estimating missing values in visual data,” IEEE Trans. Pattern Analysis and Machine Intelligence, vol. 35, no. 1, pp. 208–220, 2012.}.
 		\item Methods tailored for intermediate feature tensors: ALTeC - Adaptive Linear Tensor Completion \cite{Bragile2020} \blfootnote{\tiny \textsuperscript{8} L. Bragilevsky, and I. V.Bajić,``Tensor completion methods for collaborative intelligence,” IEEE Access, vol. 8, pp. 41162–41174, 2020.} and CALTeC - Content-Adaptive Linear Tensor Completion \cite{CALTeC_ICIP_2021} \blfootnote{\tiny \textsuperscript{9} A. Dhondea, R. A. Cohen, and I. V.Bajić, ``CALTeC: Content-adaptive linear tensor completion for collaborative intelligence," Proc. IEEE ICIP, 2021.}
 		\item Image inpainting methods such as Navier-Stokes based inpainting \cite{navierstokes} \blfootnote{\tiny \textsuperscript{10} M. Bertalmio, A. L. Bertozzi, and G. Sapiro, ``Navier-Stokes, fluid dynamics, and image and video inpainting,” in Proc. IEEE/CVF CVPR, vol. 1, pp. I–355–I–362, 2001.}
 	\end{itemize}
